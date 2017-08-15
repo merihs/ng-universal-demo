@@ -1,3 +1,6 @@
+// the following line is a temporary fix (see https://github.com/angular/angular/issues/18199)
+(global as any).XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+
 import 'zone.js/dist/zone-node';
 import 'reflect-metadata';
 import 'rxjs/Rx';
@@ -6,16 +9,25 @@ import { platformServer, renderModuleFactory } from '@angular/platform-server';
 import { ServerAppModule } from './app/server-app.module';
 import { ngExpressEngine } from '@nguniversal/express-engine';
 import { ROUTES } from './routes';
-import { App } from './api/app';
-import { enableProdMode } from '@angular/core';
+import { Api } from './api/api';
+import { enableProdMode, ReflectiveInjector } from '@angular/core';
+
+import { PostService } from './api/post.service';
+
 enableProdMode();
 const app = express();
-const api = new App();
+
+let injector = ReflectiveInjector.resolveAndCreate([
+  PostService
+]);
+const api = injector.resolveAndInstantiate(Api);
+
 const port = 8000;
 const baseUrl = `http://localhost:${port}`;
 
 app.engine('html', ngExpressEngine({
-  bootstrap: ServerAppModule
+  bootstrap: ServerAppModule,
+  providers: [ PostService ]
 }));
 
 app.set('view engine', 'html');
@@ -37,6 +49,14 @@ ROUTES.forEach(route => {
 app.get('/data', (req, res) => {
   console.time(`GET: ${req.originalUrl}`);
   res.json(api.getData());
+  console.timeEnd(`GET: ${req.originalUrl}`);
+});
+
+app.get('/posts', (req, res) => {
+  console.time(`GET: ${req.originalUrl}`);
+  let list = api.getPosts().subscribe(data => {
+    res.json(data);
+  });;
   console.timeEnd(`GET: ${req.originalUrl}`);
 });
 

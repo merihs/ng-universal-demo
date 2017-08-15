@@ -9,11 +9,7 @@ import { TransferState } from '../modules/transfer-state/transfer-state';
     <a routerLink="/lazy">Lazy</a>
     <router-outlet></router-outlet>
   `,
-  styles: [
-    `h1 {
-      color: green;
-    }`
-  ]
+  styleUrls: ['./app.component.less']
 })
 export class AppComponent implements OnInit {
   constructor(private cache: TransferState) {}

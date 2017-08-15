@@ -16,5 +16,12 @@ npm run build:prod
 npm run server
 ```
 
-Based on https://github.com/robwormald/ng-universal-demo
+Based on https://github.com/FrozenPandaz/ng-universal-demo.
 
+## Differences
+This example includes a simple configuration file (src/config/app.config.ts), 
+a simple service that retrieves data from an external web service, and support
+for LESS style files.
+
+## Known Issues
+* AOT compilation is failing because of ExtractTextPlugin in webpack.common.js
